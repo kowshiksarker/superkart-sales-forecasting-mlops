@@ -1,39 +1,44 @@
+---
+library_name: scikit-learn
+tags:
+- tabular-regression
+- random-forest
+- superkart
+- mlops
+---
 
-# SuperKart Sales Prediction Model
+# SuperKart Sales Regression Model
 
-## Model Overview
+## Model
 
-This repository contains the trained machine learning pipeline for
-predicting `Product_Store_Sales_Total` for the SuperKart dataset.
+Selected model: **Random Forest**
 
-The model is a Random Forest regression pipeline containing:
+The model is implemented as a scikit-learn Pipeline containing feature preprocessing and the selected regression estimator.
 
-1. Numerical feature passthrough
-2. One-hot encoding for categorical features
-3. Random Forest regression
+## Cross-Validation Performance
 
-The preprocessing and trained model are stored together in the
-`best_model.joblib` artifact.
+CV RMSE: **285.89**
 
-## Dataset
+## Test Performance
 
-Hugging Face Dataset Repository:
+- MAE: **105.10**
 
-ksarker/superkart-sales-dataset
+- RMSE: **278.11**
 
-Training observations: 7,010
-Testing observations: 1,753
+- R2: **0.9322**
 
-## Features
+## Hyperparameters
 
-### Numerical Features
+`{'model__max_depth': None, 'model__min_samples_leaf': 2, 'model__min_samples_split': 5, 'model__n_estimators': 200}`
+
+## Numerical Features
 
 - Product_Weight
 - Product_Allocated_Area
 - Product_MRP
 - Store_Establishment_Year
 
-### Categorical Features
+## Categorical Features
 
 - Product_Sugar_Content
 - Product_Type
@@ -42,54 +47,10 @@ Testing observations: 1,753
 - Store_Location_City_Type
 - Store_Type
 
-Target:
+## Target
 
 `Product_Store_Sales_Total`
 
-## Model Selection
+## Dataset Note
 
-Two ensemble regression algorithms were evaluated:
-
-- Random Forest Regressor
-- Gradient Boosting Regressor
-
-Three-fold cross-validation was used for hyperparameter tuning on
-the training dataset.
-
-Random Forest achieved the lowest cross-validation RMSE.
-
-### Cross-Validation Results
-
-| Model | Best CV RMSE |
-|---|---:|
-| Random Forest | 285.89 |
-| Gradient Boosting | 308.60 |
-
-## Selected Random Forest Parameters
-
-- n_estimators: 200
-- max_depth: None
-- min_samples_split: 5
-- min_samples_leaf: 2
-- random_state: 42
-
-## Final Test Performance
-
-The final model was evaluated on the untouched test dataset.
-
-| Metric | Result |
-|---|---:|
-| MAE | 105.10 |
-| RMSE | 278.11 |
-| R² | 0.9322 |
-
-## Artifact
-
-`best_model.joblib` contains the complete fitted preprocessing and
-Random Forest pipeline required for inference.
-
-## Important Dataset Note
-
-The available dataset does not contain a date or time-period variable.
-Therefore, this model predicts product-store sales rather than performing
-a chronological time-series forecast.
+The supplied dataset does not contain a date or time variable. Therefore, this model performs product-store sales prediction using regression rather than chronological time-series forecasting.

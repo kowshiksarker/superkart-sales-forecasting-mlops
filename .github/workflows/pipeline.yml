@@ -1,0 +1,96 @@
+name: SuperKart End-to-End ML Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ml-pipeline:
+    name: Data, Training and Model Registration
+    runs-on: ubuntu-latest
+
+    steps:
+      # ------------------------------------------------------------
+      # 1. Checkout the repository
+      # ------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------------
+      # 2. Set up Python
+      # ------------------------------------------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # ------------------------------------------------------------
+      # 3. Install project dependencies
+      # ------------------------------------------------------------
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ------------------------------------------------------------
+      # 4. Register raw dataset in Hugging Face
+      # ------------------------------------------------------------
+      - name: Register raw dataset
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python model_building/register_data.py
+
+      # ------------------------------------------------------------
+      # 5. Prepare and register train/test datasets
+      # ------------------------------------------------------------
+      - name: Prepare and register train/test data
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python model_building/prepare_data.py
+
+      # ------------------------------------------------------------
+      # 6. Train, tune, evaluate and register best model
+      # ------------------------------------------------------------
+      - name: Train and register model
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python model_building/train_model.py
+
+      # ------------------------------------------------------------
+      # 7. Validate deployment files
+      # ------------------------------------------------------------
+      - name: Validate deployment package
+        run: |
+          test -f deployment/app.py
+          test -f deployment/Dockerfile
+          test -f deployment/requirements.txt
+          test -f deployment/README.md
+          test -f deployment/host.py
+          echo "Deployment package validation : PASSED"
+
+      # ------------------------------------------------------------
+      # 8. Commit generated data/model metadata back to main
+      # ------------------------------------------------------------
+      - name: Commit generated project updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/train.csv
+          git add data/test.csv
+          git add model_building/README.md
+
+          if git diff --cached --quiet; then
+            echo "No generated project updates to commit."
+          else
+            git commit -m "chore: update generated ML artifacts [skip ci]"
+            git push origin HEAD:main
+          fi
