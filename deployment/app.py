@@ -1,18 +1,3 @@
-# TEMPORARY DEPLOYMENT DIAGNOSTIC
-import sys
-import importlib.util
-
-print("=" * 70)
-print("STREAMLIT DEPLOYMENT ENVIRONMENT")
-print("=" * 70)
-print("Python:", sys.version)
-print("Executable:", sys.executable)
-print("joblib spec:", importlib.util.find_spec("joblib"))
-print("pandas spec:", importlib.util.find_spec("pandas"))
-print("sklearn spec:", importlib.util.find_spec("sklearn"))
-print("huggingface_hub spec:", importlib.util.find_spec("huggingface_hub"))
-print("=" * 70)
-
 import streamlit as st
 import pandas as pd
 import joblib

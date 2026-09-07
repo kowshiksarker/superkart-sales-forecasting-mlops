@@ -1,5 +1,5 @@
-streamlit==1.49.1
-pandas==2.3.2
-scikit-learn==1.7.2
-joblib==1.5.2
-huggingface_hub==0.35.1
+streamlit==1.63.0
+pandas==2.2.3
+scikit-learn==1.6.1
+joblib==1.5.3
+huggingface_hub==1.30.0
